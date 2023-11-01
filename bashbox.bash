@@ -2,25 +2,33 @@
 
 # Check if at least one argument is provided
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <subcommand>.<sub-subcommand> <args...>"
+    echo "Usage: $0 <subcommand> <args...>"
     exit 1
 fi
 
-# Extract the subcommand and sub-subcommand
-IFS='.' read -ra cmd_array <<< "$1"
-subcommand="${cmd_array[0]}"
-subsubcommand="${cmd_array[1]}"
+BASHBOX=$0
+
+# Extract the subcommand filename
+subcommand_filename=$(echo "$1" | awk -F. '{print $1}')
+
+# Extract the first argument as the subcommand
+subcommand="$1"
 shift 1
 
+set -a
+for FILE in commands/*.bash; do source $FILE; echo "sourced $FILE"; done
+set +a
 
 # Check if the corresponding function exists
-if [ -f "commands/${subcommand}.bash" ]; then
-    source "commands/${subcommand}.bash"
-    if [ "$(type -t "${subcommand}.${subsubcommand}")" = "function" ]; then
+command_file="commands/${subcommand_filename}.bash"
+
+if [ -f "$command_file" ]; then
+    source "$command_file"
+    if [ "$(type -t "${subcommand}")" = "function" ]; then
         # Call the specified function with the remaining arguments
-        "${subcommand}.${subsubcommand}" "$@"
+        "${subcommand}" "$@"
     else
-        echo "Sub-subcommand not found: $subsubcommand"
+        echo "Subcommand not found: $subcommand"
         exit 1
     fi
 else
