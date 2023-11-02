@@ -153,6 +153,7 @@ bb.json.inplace.merge() {
 
 # messy: add trailing quote, add quote after first `.`, surround remaining `.` with quotes
 # TL;DR: `.foo.bar` becomes `."foo"."bar"`
+# @internal
 _bb.json.as_jpath() {
 	local input="$1"
 	bb.preconditions.not_null input || return $?

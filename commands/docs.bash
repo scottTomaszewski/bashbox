@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # @description
+# ---
+# Generates markdown documentation for bash scripts using shdoc
 #
-# @arg $1 string `filename_or_var` A file path or content
+# @arg $1 string `bash_dir` File path to a directory of bash scripts
+# @arg $2 string `output_dir` File path to a directory to dump the markdown files
 #
 # @exitcode 0 if successful
-# @exitcode 1 if filename_or_var not provided
+# @exitcode 1 if args not provided or `shdoc` is not found
 bb.docs.generate_for_bash() {
 	local bash_dir="$1"
 	local output_dir="$2"

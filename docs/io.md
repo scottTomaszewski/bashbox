@@ -5,6 +5,7 @@
 * [bb.io.without_last_extension](#bbiowithoutlastextension)
 * [bb.io.extensions](#bbioextensions)
 * [bb.io.last_extension](#bbiolastextension)
+* [bb.io.full_dir_of](#bbiofulldirof)
 
 ### bb.io.file_or_var
 
@@ -101,6 +102,29 @@ bb io.last_extension "filename.tar.gz"
 #### Arguments
 
 * **$1** (string): `filename` A file name/path
+
+#### Exit codes
+
+* **0**: if successful
+* **1**: if filename not provided
+
+### bb.io.full_dir_of
+
+---
+Prints the full path to a file, handling a few special cases.
+Can be especially useful to get a script's directory with `bb io.full_dir_of "${BASH_filepath[0]}"` inside the script
+Source: https://stackoverflow.com/a/246128
+
+#### Example
+
+```bash
+# prints something like `/home/scott.tomaszewski/code/personal/bashbox`
+bb io.full_dir_of "."
+```
+
+#### Arguments
+
+* **$1** (string): `filename` A file name
 
 #### Exit codes
 

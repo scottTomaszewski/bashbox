@@ -92,3 +92,30 @@ bb.io.last_extension() {
 	bb.preconditions.not_null filename || return $?
 	echo "${filename##*.}"
 }
+
+# @description
+# ---
+# Prints the full path to a file, handling a few special cases.
+# Can be especially useful to get a script's directory with `bb io.full_dir_of "${BASH_filepath[0]}"` inside the script
+# Source: https://stackoverflow.com/a/246128
+#
+# @example
+# # prints something like `/home/scott.tomaszewski/code/personal/bashbox`
+# bb io.full_dir_of "."
+#
+# @arg $1 string `filename` A file name
+#
+# @exitcode 0 if successful
+# @exitcode 1 if filename not provided
+bb.io.full_dir_of() {
+	local filepath="$1"
+	bb.preconditions.not_null filepath || return $?
+	local directory
+	while [ -L "$filepath" ]; do # resolve $filepath until the file is no longer a symlink
+		directory=$( cd -P "$( dirname "$filepath" )" >/dev/null 2>&1 && pwd )
+		filepath=$(readlink "$filepath")
+		[[ $filepath != /* ]] && filepath=$directory/$filepath # if $filepath was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+	done
+	directory=$( cd -P "$( dirname "$filepath" )" >/dev/null 2>&1 && pwd )
+	echo "$directory"
+}
