@@ -97,18 +97,6 @@ bb.git.remote.expand_sha() {
 	git rev-parse "$short_sha"
 }
 
-# "Clones" a repo as a specific ref with a depth of 1.  The ref can be a branch name, tag, or commit hash. Optional
-# `repo_dir` param to specify the directory to use as the shallow-clone destination. Without this param, standard git
-# behavior will carry out (uses the repo name as the destination dir name)
-# Note: If successful, the repo will be in a "detached HEAD" state. The `SHALLOW_CLONE_REPO_DIR` variable will
-# be set with the absolute path of the repo.
-#
-# USAGE
-#   bb.git.clone.shallow git@gitlab.com:finxact/engineering/core/code-gen.git 05347c0ed748825d2a28ba41a7f17550acee70c4
-#   bb.git.clone.shallow git@gitlab.com:finxact/engineering/core/code-gen.git v1.33.0
-#   bb.git.clone.shallow git@gitlab.com:finxact/engineering/core/code-gen.git master
-#   bb.git.clone.shallow git@gitlab.com:finxact/engineering/core/code-gen.git 05347c0ed
-
 # @description
 # ---
 # "Clones" a repo at a specific `ref` with a depth of 1.
@@ -136,8 +124,6 @@ bb.git.remote.expand_sha() {
 # @arg $2 string `repo_url` Url to the git repo
 # @arg $3 string `repo_dir` [Optional] Directory to clone the repo into. Defaults to repo name.
 #
-# #@set SHALLOW_CLONE_REPO_DIR string absolute path the repo is cloned into.
-#
 # @exitcode 0 if successful
 bb.git.clone.shallow() {
 	local ref="$1"
@@ -150,8 +136,6 @@ bb.git.clone.shallow() {
 	if [ -z "$repo_dir" ]; then
 		repo_dir="$(basename "$repo_url" .git)"
 	fi
-	# TODO - this is not working, likely because of bb subshell :(
-	export SHALLOW_CLONE_REPO_DIR="$(pwd)/${repo_dir}"
 
 	# ensure proper dir after function execution
 	local og_dir="$(pwd)"
