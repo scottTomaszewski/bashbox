@@ -112,10 +112,10 @@ bb.io.full_dir_of() {
 	bb.preconditions.not_null filepath || return $?
 	local directory
 	while [ -L "$filepath" ]; do # resolve $filepath until the file is no longer a symlink
-		directory=$( cd -P "$( dirname "$filepath" )" >/dev/null 2>&1 && pwd )
+		directory=$(cd -P "$(dirname "$filepath")" > /dev/null 2>&1 && pwd)
 		filepath=$(readlink "$filepath")
 		[[ $filepath != /* ]] && filepath=$directory/$filepath # if $filepath was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 	done
-	directory=$( cd -P "$( dirname "$filepath" )" >/dev/null 2>&1 && pwd )
+	directory=$(cd -P "$(dirname "$filepath")" > /dev/null 2>&1 && pwd)
 	echo "$directory"
 }

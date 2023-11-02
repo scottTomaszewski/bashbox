@@ -110,28 +110,28 @@ bb.json.delete() {
 }
 
 bb.json.inplace.delete() {
-  local key=$1
-  local input=$2
-  bb.preconditions.require_file "$input" || return $?
+	local key=$1
+	local input=$2
+	bb.preconditions.require_file "$input" || return $?
 
-  output=$(bb.json.delete "$key" "$input")
-  local exit_code=$?
-  if [ "$exit_code" != 0 ]; then
-	 bb.log.error "Failed to delete json key (error $exit_code): $output"
-	 return $exit_code
-  fi
-  echo -e "$output" > "$input"
+	output=$(bb.json.delete "$key" "$input")
+	local exit_code=$?
+	if [ "$exit_code" != 0 ]; then
+		bb.log.error "Failed to delete json key (error $exit_code): $output"
+		return $exit_code
+	fi
+	echo -e "$output" > "$input"
 }
 
 # Merges the json contents of overriding_input with the json of base_input
 # USAGE
 #   bb.json.merge "BUILD_INFO.json" "new.json"
 bb.json.merge() {
-  local base_input="$1"
-  local overriding_input="$2"
-  bb.preconditions.not_null base_input || return $?
-  bb.preconditions.not_null overriding_input || return $?
-  jq -s '.[0] * .[1]' <(bb.io.file_or_var "$base_input") <(bb.io.file_or_var "$overriding_input")
+	local base_input="$1"
+	local overriding_input="$2"
+	bb.preconditions.not_null base_input || return $?
+	bb.preconditions.not_null overriding_input || return $?
+	jq -s '.[0] * .[1]' <(bb.io.file_or_var "$base_input") <(bb.io.file_or_var "$overriding_input")
 }
 
 bb.json.inplace.merge() {
@@ -159,4 +159,3 @@ _bb.json.as_jpath() {
 	bb.preconditions.not_null input || return $?
 	echo "$input\"" | sed 's/^\./\."/' | sed 's/\./\"\.\"/2g'
 }
-

@@ -12,10 +12,10 @@
 #
 # @exitcode 0 if successful
 bb.git.get_ref() {
-    bb.preconditions.require_command git || return $?
-    git describe --tags --exact-match 2> /dev/null \
-      || git symbolic-ref -q --short HEAD \
-      || git rev-parse HEAD
+	bb.preconditions.require_command git || return $?
+	git describe --tags --exact-match 2> /dev/null ||
+		git symbolic-ref -q --short HEAD ||
+		git rev-parse HEAD
 }
 
 # @description
@@ -28,7 +28,7 @@ bb.git.get_ref() {
 #
 # @exitcode 0 if successful
 bb.git.last_tag() {
-    git describe --tags --abbrev=0
+	git describe --tags --abbrev=0
 }
 
 # @description
@@ -43,6 +43,9 @@ bb.git.last_tag() {
 # # prints `25291a8fe1aa01cf105be0b9516b3de2a7ebe118`
 # bb git.remote.expand_sha 25291a8fe https://github.com/scottTomaszewski/bashbox/
 #
+# @arg $1 string `short_sha` Git short SHA
+# @arg $2 string `repo_url` Url to the git repo
+#
 # @exitcode 0 if successful
 bb.git.remote.expand_sha() {
 	local short_sha="$1"
@@ -55,27 +58,27 @@ bb.git.remote.expand_sha() {
 
 	# make sure we cleanup afterwards
 	local og_dir="$(pwd)"
-	trap 'cd "$og_dir" && rm -rf "${og_dir}/${temp_repo_dir}" && rm -rf "${og_dir}/${temp_repo_dir}.txt"'  RETURN
+	trap 'cd "$og_dir" && rm -rf "${og_dir}/${temp_repo_dir}" && rm -rf "${og_dir}/${temp_repo_dir}.txt"' RETURN
 
 	# If we are currently in the correct repo, return rev-parse
 	if [ "$curr_remote_url" == "$repo_url" ]; then
-	  local revparse_output_file="${temp_repo_dir}.txt"
-	  git rev-parse "$short_sha" &> "$revparse_output_file"
-	  local revparse_return_code=$?
+		local revparse_output_file="${temp_repo_dir}.txt"
+		git rev-parse "$short_sha" &> "$revparse_output_file"
+		local revparse_return_code=$?
 
-	  # If no error, return. Otherwise current repo is a shallow clone, continue with full clone
-	  if [ $revparse_return_code == 0 ]; then
+		# If no error, return. Otherwise current repo is a shallow clone, continue with full clone
+		if [ $revparse_return_code == 0 ]; then
 			cat "$revparse_output_file"
 			return
-	  fi
+		fi
 	fi
 
 	# Attempt to find the commit with ls-remote
 	local expanded
 	expanded=$(git ls-remote "$repo_url" | awk '{ print $1 }' | grep "$short_sha" | head -n 1)
 	if [ -n "$expanded" ]; then
-	  echo "$expanded"
-	  return
+		echo "$expanded"
+		return
 	fi
 
 	# Forced to deep clone to grab short sha objects
@@ -85,8 +88,8 @@ bb.git.remote.expand_sha() {
 
 	# If clone failed, print and error out
 	if [ $clone_return_code != 0 ]; then
-	  cat "$clone_output_file"
-	  return $clone_return_code
+		cat "$clone_output_file"
+		return $clone_return_code
 	fi
 
 	# Rev-parse the sha and cleanup
@@ -94,8 +97,8 @@ bb.git.remote.expand_sha() {
 	git rev-parse "$short_sha"
 }
 
-# "Clones" a repo as a specific REF with a depth of 1.  The REF can be a branch name, tag, or commit hash. Optional
-# `REPO_DIR` param to specify the directory to use as the shallow-clone destination. Without this param, standard git
+# "Clones" a repo as a specific ref with a depth of 1.  The ref can be a branch name, tag, or commit hash. Optional
+# `repo_dir` param to specify the directory to use as the shallow-clone destination. Without this param, standard git
 # behavior will carry out (uses the repo name as the destination dir name)
 # Note: If successful, the repo will be in a "detached HEAD" state. The `SHALLOW_CLONE_REPO_DIR` variable will
 # be set with the absolute path of the repo.
@@ -105,76 +108,113 @@ bb.git.remote.expand_sha() {
 #   bb.git.clone.shallow git@gitlab.com:finxact/engineering/core/code-gen.git v1.33.0
 #   bb.git.clone.shallow git@gitlab.com:finxact/engineering/core/code-gen.git master
 #   bb.git.clone.shallow git@gitlab.com:finxact/engineering/core/code-gen.git 05347c0ed
+
+# @description
+# ---
+# "Clones" a repo at a specific `ref` with a depth of 1.
+#
+# - The `ref` can be a branch name, tag, commit SHA, or commit short SHA.
+# - The repo will be in a "detached HEAD" state.
+#
+# @example
+# # shallow clones repo at short SHA
+# bb git.clone.shallow 25291a8fe https://github.com/scottTomaszewski/bashbox/
+# &nbsp;
+# # shallow clones repo at full SHA
+# bb git.clone.shallow 25291a8fe1aa01cf105be0b9516b3de2a7ebe118 https://github.com/scottTomaszewski/bashbox/
+# &nbsp;
+# # shallow clones repo at tag
+# bb git.clone.shallow v0.0.1 https://github.com/scottTomaszewski/bashbox/
+# &nbsp;
+# # shallow clones repo at branch
+# bb git.clone.shallow main https://github.com/scottTomaszewski/bashbox/
+# &nbsp;
+# # shallow clones repo at branch into directory `something`
+# bb git.clone.shallow main https://github.com/scottTomaszewski/bashbox/ "something"
+#
+# @arg $1 string `short_sha` Git short SHA
+# @arg $2 string `repo_url` Url to the git repo
+# @arg $3 string `repo_dir` [Optional] Directory to clone the repo into. Defaults to repo name.
+#
+# #@set SHALLOW_CLONE_REPO_DIR string absolute path the repo is cloned into.
+#
+# @exitcode 0 if successful
 bb.git.clone.shallow() {
-    local REF="$1"
-    local REPO_URL="$2"
-    local REPO_DIR="$3"
+	local ref="$1"
+	local repo_url="$2"
+	local repo_dir="$3"
 
-    bb.preconditions.not_null REPO_URL || return $?
-    bb.preconditions.not_null REF || return $?
+	bb.preconditions.not_null repo_url || return $?
+	bb.preconditions.not_null ref || return $?
 
-    if [ -z "$REPO_DIR" ]; then
-        REPO_DIR="$(basename "$REPO_URL" .git)"
-    fi
-    export SHALLOW_CLONE_REPO_DIR="$(pwd)/${REPO_DIR}"
-    git config --global advice.detachedHead false
+	if [ -z "$repo_dir" ]; then
+		repo_dir="$(basename "$repo_url" .git)"
+	fi
+	# TODO - this is not working, likely because of bb subshell :(
+	export SHALLOW_CLONE_REPO_DIR="$(pwd)/${repo_dir}"
 
-    # ensure proper dir after function execution
-    local OG_DIR="$(pwd)"
-    trap 'cd "$OG_DIR"' RETURN
+	# ensure proper dir after function execution
+	local og_dir="$(pwd)"
+	trap 'cd "$og_dir"' RETURN
 
-    # attempt to clone the branch/tag
-    local CLONE_SUCCESS=0
-    git clone --depth=1 --branch="$REF" "$REPO_URL" "$REPO_DIR" &> clone_output.txt || CLONE_SUCCESS=$?
-    local CLONE_OUTPUT=$(cat clone_output.txt)
-    rm clone_output.txt
+	# attempt to clone the branch/tag
+	local clone_successful=0
+	git -c advice.detachedHead=false clone --depth=1 --branch="$ref" "$repo_url" "$repo_dir" &> clone_output.txt || clone_successful=$?
+	local clone_output
+	clone_output=$(cat clone_output.txt)
+	rm clone_output.txt
 
-    if [ "$CLONE_SUCCESS" == 0 ]; then
-        printf "%s\n" "$CLONE_OUTPUT"
+	if [ "$clone_successful" == 0 ]; then
+		printf "%s\n" "$clone_output"
 
-    # If invalid, assume REF is a commit hash and attempt a fetch/checkout
-    elif grep -q "not found in upstream origin" <(echo "$CLONE_OUTPUT"); then
-        bb.log.warn "Could not directly clone [$REF] (not branch nor tag). Attempting to fetch/checkout instead"
-        mkdir "$REPO_DIR"
-        cd "$REPO_DIR"
-        git init 1>&2
-        git remote add origin "$REPO_URL"
-        local FETCH_RETURN_CODE=0
-        git fetch --depth 1 origin "$REF" &> fetch_output.txt || FETCH_RETURN_CODE=$?
-        local FETCH_OUTPUT=$(cat fetch_output.txt)
-        rm fetch_output.txt
+	# If invalid, assume ref is a commit hash and attempt a fetch/checkout
+	elif grep -q "not found in upstream origin" <(echo "$clone_output"); then
+		bb.log.warn "Could not directly clone [$ref] (not branch nor tag). Attempting to fetch/checkout."
+		mkdir "$repo_dir"
+		cd "$repo_dir"
+		git init 1>&2
+		git remote add origin "$repo_url"
+		local fetch_return_code=0
+		git fetch --depth 1 origin "$ref" &> fetch_output.txt || fetch_return_code=$?
+		local fetch_output=$(cat fetch_output.txt)
+		rm fetch_output.txt
 
-        if [ "$FETCH_RETURN_CODE" != 0 ]; then
-            # Attempt to find the short SHA with ls-remote
-            bb.log.warn "Could not fetch/checkout $REF (must be short SHA). Attempting to expand SHA."
-            EXPANDED=$(git ls-remote "$REPO_URL" | awk '{ print $1 }' | grep "$REF" | head -n 1)
+		if [ "$fetch_return_code" != 0 ]; then
+			# Attempt to find the short SHA with ls-remote
+			bb.log.warn "Could not fetch/checkout [$ref] (must be short SHA). Attempting to expand SHA."
+			local expanded
+			expanded=$(_bb.git.remote.expand_sha_with_ls_remote "$ref" "$repo_url")
+			#expanded=$(git ls-remote "$repo_url" | awk '{ print $1 }' | grep "$ref" | head -n 1)
 
-            if [ -z "$EXPANDED" ]; then
-                bb.log.warn "Could not find special pointer to the ref ${REF}. Cloning full repo to find ref."
+			if [ -z "$expanded" ]; then
+				bb.log.warn "Could not find special pointer to the ref [${ref}]. Cloning full repo to find ref."
 
-                # clean up old attempts, clone repo, checkout ref
-                cd ..
-                rm -rf "$REPO_DIR"
-                git clone "$REPO_URL" "$REPO_DIR"
-                cd "$REPO_DIR"
-                git checkout "$REF"
-                return 0
-            fi
+				# clean up old attempts,
+				cd ..
+				rm -rf "$repo_dir"
 
-            # Attempt to fetch the expanded (full) SHA
-            git fetch --depth 1 origin "$EXPANDED"
-        fi
+				# clone repo, checkout ref
+				git clone "$repo_url" "$repo_dir"
+				cd "$repo_dir"
+				git -c advice.detachedHead=false checkout "$ref"
+				return 0
+			fi
 
-        git checkout FETCH_HEAD
+			# Attempt to fetch the expanded (full) SHA
+			git fetch --depth 1 origin "$expanded"
+		fi
 
-    # Otherwise print error and exit
-    else
-        printf "%s\n" "$CLONE_OUTPUT"
-        cd "$OG_DIR"
-        return $CLONE_SUCCESS
-    fi
+		git -c advice.detachedHead=false checkout FETCH_HEAD
+
+	# Otherwise print error and exit
+	else
+		printf "%s\n" "$clone_output"
+		cd "$og_dir"
+		return $clone_successful
+	fi
 }
 
+# @internal
 _bb.git.remote.expand_sha_with_ls_remote() {
 	local short_sha="$1"
 	local repo_url="$2"

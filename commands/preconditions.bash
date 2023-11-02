@@ -32,7 +32,7 @@ bb.preconditions.require_command() {
 	bb.preconditions.has_command "$cmd"
 	local exit_code=$?
 	if [ "$exit_code" != 0 ]; then
-	bb.log.error "Command not found: $cmd"
+		bb.log.error "Command not found: $cmd"
 		return $exit_code
 	fi
 }
