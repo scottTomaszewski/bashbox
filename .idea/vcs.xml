@@ -2,5 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Obsidian--ITS-Theme" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/f3e0e20" vcs="Git" />
   </component>
 </project>

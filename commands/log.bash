@@ -7,6 +7,10 @@ bb.log.info() {
     echo -e >&2 "[INFO] $message"
 }
 
+bb.log.warn() {
+	bb.log.warning "$@"
+}
+
 bb.log.warning() {
     message="$@"
     bb.log.color yellow "[WARNING] $message"
