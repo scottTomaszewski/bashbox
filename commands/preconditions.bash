@@ -4,13 +4,33 @@
 # Usage:
 # 	CI::PRECONDITIONS::not_null SOME_VARIABLE "You must set 'SOME_VARIABLE'"
 #		=>  You must set 'SOME_VARIABLE'
-preconditions.not_null() {
+bb.preconditions.not_null() {
   local VAR_NAME="$1"
-  echo "var name $VAR_NAME with value ${!VAR_NAME}"
   local ERROR_MSG="$2"
   if [ -z "$ERROR_MSG" ]; then ERROR_MSG="Expected [$VAR_NAME] to have value, but was empty."; fi
   if [ -n "${!VAR_NAME}" ]; then return; fi
 
-  CI::LOG::error "Precondition failure: $ERROR_MSG"
+  bb.log.error "Precondition failure: $ERROR_MSG"
   return 1
+}
+
+# Returns...
+# - 0 if command is found and is a command (file type)
+# - 1 if command arg is not provided
+# - 127 if command not found as a file type
+bb.preconditions.has_command() {
+    local cmd="$1"
+    bb.preconditions.not_null cmd || return $?
+    [[ $(type -t "$1") == "file" ]] && return 0
+    return 127
+}
+
+bb.preconditions.require_command() {
+    local cmd="$1"
+    bb.preconditions.has_command "$cmd"
+    local exit_code=$?
+    if [ "$exit_code" != 0 ]; then
+        bb.log.error "Command not found: $cmd"
+        return $exit_code
+    fi
 }

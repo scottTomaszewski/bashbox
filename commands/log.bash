@@ -2,30 +2,44 @@
 
 # log.bash
 
-log.warn() {
-    message="$1"
-    echo "Log Warning: $message $color_string"
+bb.log.info() {
+    message="$@"
+    echo -e >&2 "[INFO] $message"
 }
 
-log.info() {
-    message="$1"
-    echo "Log Info: $message"
+bb.log.warning() {
+    message="$@"
+    bb.log.color yellow "[WARNING] $message"
 }
 
-log.fatal() {
-    message="$1"
-    echo "Log Fatal: $message"
+bb.log.error() {
+    message="$@"
+    bb.log.color red "[ERROR] $message"
 }
 
-log.foo.bar() {
-    message="$1"
-    echo "Foo bar: $message"
+bb.log.title() {
+    bb.preconditions.require_command figlet
+    figlet >&2 "$@"
 }
 
-log.color.code() {
+bb.log.header() {
+    bb.preconditions.require_command figlet
+    figlet -f small >&2 "$@"
+}
+
+# Uses echo to print message in desired color. Colors are specified in bb.log.color.code
+bb.log.color() {
+  local COLOR_STRING=$1
+  bb.preconditions.not_null COLOR_STRING || return $?
+  local MESSAGE="${@:2}"
+  local COLOR_CODE=$(CI::COLOR::code "$COLOR_STRING")
+  local TXTRESET="$(tput sgr 0 2>/dev/null || echo '\e[0m')"
+  echo -e >&2 "${COLOR_CODE}${MESSAGE}${TXTRESET}"
+}
+
+bb.log.color.code() {
   local color_string="$1"
-  $BASHBOX log.warn "what is happening?"
-  preconditions.not_null color_string || return $?
+  bb.preconditions.not_null color_string || return $?
 
   # Text colors
   local TXTBLK="$(tput setaf 0 2>/dev/null || echo '\e[0;30m')"
