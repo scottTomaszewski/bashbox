@@ -19,23 +19,66 @@ bb.io.file_or_var() {
 	echo "$filename_or_var"
 }
 
+# @description Removes all extensions from a file path.
+#
+# @example
+# # prints `filename`
+# bb io.without_extensions "filename.tar.gz"
+#
+# @arg $1 string `filename` A file name/path
+#
+# @exitcode 0 if successful
+# @exitcode 1 if filename not provided
 bb.io.without_extensions() {
 	local filename="$1"
 	bb.preconditions.not_null filename || return $?
 	echo "${filename%%.*}"
 }
 
+# @description Removes the last extensions from a file path
+#
+# @example
+# # prints `filename.tar`
+# bb io.without_last_extension "filename.tar.gz"
+#
+# @arg $1 string `filename` A file name/path
+#
+# @exitcode 0 if successful
+# @exitcode 1 if filename not provided
 bb.io.without_last_extension() {
-	# todo
-	return
+	local filename="$1"
+	bb.preconditions.not_null filename || return $?
+	echo "${filename%.*}"
 }
 
+# @description Returns all extensions of a file path
+#
+# @example
+# # prints `tar.gz`
+# bb io.extensions "filename.tar.gz"
+#
+# @arg $1 string `filename` A file name/path
+#
+# @exitcode 0 if successful
+# @exitcode 1 if filename not provided
 bb.io.extensions() {
-	# todo
-	return
+	local filename="$1"
+	bb.preconditions.not_null filename || return $?
+	echo "${filename#*.}"
 }
 
+# @description Returns last extension of a file path
+#
+# @example
+# # prints `gz`
+# bb io.last_extension "filename.tar.gz"
+#
+# @arg $1 string `filename` A file name/path
+#
+# @exitcode 0 if successful
+# @exitcode 1 if filename not provided
 bb.io.last_extension() {
-	# todo
-	return
+	local filename="$1"
+	bb.preconditions.not_null filename || return $?
+	echo "${filename##*.}"
 }
