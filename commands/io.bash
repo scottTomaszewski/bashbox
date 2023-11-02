@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# @description If `filename_or_var` is a filepath and exists, runs `cat` on the file.  Otherwise, runs `echo` on `$filename_or_var`
+# @description
+# ---
+# If `filename_or_var` is a filepath and exists, runs `cat` on the file.  Otherwise, runs `echo` on `$filename_or_var`
 #
 # For commands that only take a file, can be useful to do the following (where `INPUT` is either a filepath or string):
 # 		`command -f <(bb io.file_or_var "$INPUT")`
@@ -19,7 +21,9 @@ bb.io.file_or_var() {
 	echo "$filename_or_var"
 }
 
-# @description Removes all extensions from a file path.
+# @description
+# ---
+# Removes all extensions from a file path.
 #
 # @example
 # # prints `filename`
@@ -35,7 +39,9 @@ bb.io.without_extensions() {
 	echo "${filename%%.*}"
 }
 
-# @description Removes the last extensions from a file path
+# @description
+# ---
+# Removes the last extensions from a file path
 #
 # @example
 # # prints `filename.tar`
@@ -51,7 +57,9 @@ bb.io.without_last_extension() {
 	echo "${filename%.*}"
 }
 
-# @description Returns all extensions of a file path
+# @description
+# ---
+# Returns all extensions of a file path
 #
 # @example
 # # prints `tar.gz`
@@ -67,7 +75,9 @@ bb.io.extensions() {
 	echo "${filename#*.}"
 }
 
-# @description Returns last extension of a file path
+# @description
+# ---
+# Returns last extension of a file path
 #
 # @example
 # # prints `gz`

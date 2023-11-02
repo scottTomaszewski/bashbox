@@ -8,6 +8,7 @@
 
 ### bb.io.file_or_var
 
+---
 If `filename_or_var` is a filepath and exists, runs `cat` on the file.  Otherwise, runs `echo` on `$filename_or_var`
 
 For commands that only take a file, can be useful to do the following (where `INPUT` is either a filepath or string):
@@ -24,6 +25,7 @@ For commands that only take a file, can be useful to do the following (where `IN
 
 ### bb.io.without_extensions
 
+---
 Removes all extensions from a file path.
 
 #### Example
@@ -44,6 +46,7 @@ bb io.without_extensions "filename.tar.gz"
 
 ### bb.io.without_last_extension
 
+---
 Removes the last extensions from a file path
 
 #### Example
@@ -64,6 +67,7 @@ bb io.without_last_extension "filename.tar.gz"
 
 ### bb.io.extensions
 
+---
 Returns all extensions of a file path
 
 #### Example
@@ -84,6 +88,7 @@ bb io.extensions "filename.tar.gz"
 
 ### bb.io.last_extension
 
+---
 Returns last extension of a file path
 
 #### Example
