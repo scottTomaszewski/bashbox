@@ -34,3 +34,11 @@ bb.preconditions.require_command() {
         return $exit_code
     fi
 }
+
+bb.preconditions.require_file() {
+	local filepath="$1"
+	bb.preconditions.not_null filepath || return $?
+	if [ -f "$filepath" ]; then return; fi
+	bb.log.error "Precondition failed: Expected file at $filepath but is missing."
+	return 1
+}
