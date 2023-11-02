@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# log.bash
-
 bb.log.info() {
     message="$@"
     echo -e >&2 "[INFO] $message"

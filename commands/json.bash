@@ -1,3 +1,5 @@
+#!/bin/bash
+
 bb.json.get() {
 	local key="$1"
 	local input="$2"

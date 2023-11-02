@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Prints the git tag is available, or the branch name if available, or the SHA
 # Source: https://stackoverflow.com/a/55276236
 bb.git.get_ref() {
