@@ -1,7 +1,16 @@
 #!/bin/bash
 
-# Prints the git tag is available, or the branch name if available, or the SHA
+# @description
+# ---
+# Prints the best ref possible for the current HEAD: Git tag if available, or the branch name if available, or the SHA.
+#
 # Source: https://stackoverflow.com/a/55276236
+#
+# @example
+# # prints `main`, the current branch
+# bb git.get_ref
+#
+# @exitcode 0 if successful
 bb.git.get_ref() {
     bb.preconditions.require_command git || return $?
     git describe --tags --exact-match 2> /dev/null \
@@ -9,64 +18,80 @@ bb.git.get_ref() {
       || git rev-parse HEAD
 }
 
+# @description
+# ---
 # Prints the most recently created tag according to the git history
+#
+# @example
+# # prints `v1.0.0`
+# bb git.last_tag
+#
+# @exitcode 0 if successful
 bb.git.last_tag() {
     git describe --tags --abbrev=0
 }
 
-# Expands a git short SHA into a full version.  If the current directory is not the git remote matching repo_url, this
-# function will pull down the repo, expand the commit SHA, and cleanup.  Note: if this clone is required, it may be a
-# slow operation.  If have cloned the repo already, use `git rev-parse <short-sha>` directly.
-# USAGE:
-#   bb.git.remote.expand_sha 8a723b3c0 git@gitlab.com:something/repo.git
-#   8a723b3c0dcc764fe43ee6530150c399c92193c3
+# @description
+# ---
+# Expands a git short sha into its full form.
+#
+# If the `repo_url` doesnt match the current directory, this function will attempt to expand the SHA remotely which may
+# require a full git clone which can be slow on large repos.  If you already have the repo cloned, using
+# `git rev-parse <short-sha>` directly is faster.
+#
+# @example
+# # prints `25291a8fe1aa01cf105be0b9516b3de2a7ebe118`
+# bb git.remote.expand_sha 25291a8fe https://github.com/scottTomaszewski/bashbox/
+#
+# @exitcode 0 if successful
 bb.git.remote.expand_sha() {
-    local short_sha="$1"
-    local repo_url="$2"
-    bb.preconditions.not_null short_sha || return $?
-    bb.preconditions.not_null repo_url || return $?
+	local short_sha="$1"
+	local repo_url="$2"
+	bb.preconditions.not_null short_sha || return $?
+	bb.preconditions.not_null repo_url || return $?
 
-    local temp_repo_dir="bb-expand-sha-temp"
-    local curr_remote_url=$(git config --get remote.origin.url)
+	local temp_repo_dir="bb-expand-sha-temp"
+	local curr_remote_url=$(git config --get remote.origin.url)
 
-    # If we are currently in the correct repo, return rev-parse
-    if [ "$curr_remote_url" == "$repo_url" ]; then
-        local revparse_output_file="${temp_repo_dir}.txt"
-        git rev-parse "$short_sha" &> "$revparse_output_file"
-        local revparse_return_code=$?
+	# make sure we cleanup afterwards
+	local og_dir="$(pwd)"
+	trap 'cd "$og_dir" && rm -rf "${og_dir}/${temp_repo_dir}" && rm -rf "${og_dir}/${temp_repo_dir}.txt"'  RETURN
 
-        # If no error, return. Otherwise current repo is a shallow clone, continue with full clone
-        if [ $revparse_return_code == 0 ]; then
-            cat "$revparse_output_file"
-            return
-        fi
-    fi
+	# If we are currently in the correct repo, return rev-parse
+	if [ "$curr_remote_url" == "$repo_url" ]; then
+	  local revparse_output_file="${temp_repo_dir}.txt"
+	  git rev-parse "$short_sha" &> "$revparse_output_file"
+	  local revparse_return_code=$?
 
-    # Attempt to find the commit with ls-remote
-    local expanded
-    expanded=$(git ls-remote "$repo_url" | awk '{ print $1 }' | grep "$short_sha" | head -n 1)
-    if [ -n "$expanded" ]; then
-        echo "$expanded"
-        return
-    fi
+	  # If no error, return. Otherwise current repo is a shallow clone, continue with full clone
+	  if [ $revparse_return_code == 0 ]; then
+			cat "$revparse_output_file"
+			return
+	  fi
+	fi
 
-    # We are not in the correct repo, forced to deep clone to grab short sha objects
-    local clone_output_file="${temp_repo_dir}.txt"
-    git clone "$repo_url" "$temp_repo_dir" &> "$clone_output_file"
-    local clone_return_code=$?
+	# Attempt to find the commit with ls-remote
+	local expanded
+	expanded=$(git ls-remote "$repo_url" | awk '{ print $1 }' | grep "$short_sha" | head -n 1)
+	if [ -n "$expanded" ]; then
+	  echo "$expanded"
+	  return
+	fi
 
-    # If clone failed, print and error out
-    if [ $clone_return_code != 0 ]; then
-        cat "$clone_output_file"
-        return $clone_return_code
-    fi
+	# Forced to deep clone to grab short sha objects
+	local clone_output_file="${temp_repo_dir}.txt"
+	git clone "$repo_url" "$temp_repo_dir" &> "$clone_output_file"
+	local clone_return_code=$?
 
-    # Rev-parse the sha and cleanup
-    cd "$temp_repo_dir"
-    git rev-parse "$short_sha"
-    cd ..
-    rm -rf "$temp_repo_dir"
-    rm "$clone_output_file"
+	# If clone failed, print and error out
+	if [ $clone_return_code != 0 ]; then
+	  cat "$clone_output_file"
+	  return $clone_return_code
+	fi
+
+	# Rev-parse the sha and cleanup
+	cd "$temp_repo_dir"
+	git rev-parse "$short_sha"
 }
 
 # "Clones" a repo as a specific REF with a depth of 1.  The REF can be a branch name, tag, or commit hash. Optional
