@@ -104,6 +104,68 @@ bb.git.notes.kv.get() {
 
 # @description
 # ---
+# Retrieves the value for a specified `key` in the git notes of the specified `ref` for the repo at `repo_url`
+#
+# If there are multiple lines in the git notes with the same key, the value of the last one will be returned.
+#
+# @example
+# # Gets the value of key `metadata` in the git notes of commit `ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55` for repo `https://github.com/scottTomaszewski/bashbox/`
+# bb git.notes.kv.remote.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55 https://github.com/scottTomaszewski/bashbox/
+#
+# TODO - add default value support
+# &nbsp;
+# # this will get the value of key `metadata` in the git notes of HEAD and defaults to `{"foo":"bar"}` if not found
+# bb git.notes.kv.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55 "{\"foo\":\"bar\"}"
+#
+# @arg $1 string `key` Key portion of a key-value pair in git-notes entry
+# @arg $2 string `ref` (Optional) Git object ref commit hash, tag, etc. Defaults to HEAD
+#
+# @exitcode 0 if successful
+bb.git.notes.kv.remote.get() {
+	# key portion of the key-value pair
+	local key=$1
+	# git reference object - commit hash, tag, etc
+	local ref=$2
+	# git repo url
+	local repo_url=$3
+
+	bb.preconditions.not_null key || return $?
+	bb.preconditions.not_null ref || return $?
+	bb.preconditions.not_null repo_url || return $?
+
+	local curr_remote_url
+	curr_remote_url=$(git config --get remote.origin.url)
+
+	# If we are currently in the correct repo...
+	if [ "$curr_remote_url" == "$repo_url" ]; then
+		bb.git.notes.kv.get "$key" "$ref"
+		return $?
+	fi
+
+	# We are not in the correct repo, forced to shallow clone. Prepare cleanup
+	local temp_repo_dir="$(pwd)/ciu-notes-kv-temp"
+	trap "rm -rf '$temp_repo_dir'" EXIT
+
+	# Shallow clone the ref
+	bb.git.clone.shallow "$ref" "$repo_url" "$temp_repo_dir" 1>&2
+	local exit_code=$?
+
+	# If clone failed, print and error out
+	if [ $exit_code != 0 ]; then
+		return $exit_code
+	fi
+
+	# Get git-note key for ref, print, return
+	cd "$temp_repo_dir"
+	local value
+	value=$(bb.git.notes.kv.get "$key" "$ref")
+	exit_code=$?
+	echo -e "$value"
+	return $exit_code
+}
+
+# @description
+# ---
 # Sets the value for a specified `key` in the git notes on `HEAD` ref and pushes the change.
 #
 # There is currently no guarantee of the order of keys and ordering cannot be relied on.
