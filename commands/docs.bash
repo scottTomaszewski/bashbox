@@ -20,7 +20,7 @@ bb.docs.generate_for_bash() {
 	for bash_file in "$bash_dir"/*.bash; do
 		bb.log.info "Generating docs for $bash_file"
 		local filename
-		filename=$(bb.io.without_extensions "$bash_file")
+		filename=$(bb.io.without_last_extension "$bash_file")
 		filename=$(basename "$filename")
 		shdoc < "$bash_file" > "${output_dir}/${filename}.md"
 	done
@@ -60,11 +60,18 @@ _bb.docs.handle_usage() {
 			local docs
 			docs=$(_bb.docs.for_function "${BASH_SOURCE[1]}" "${FUNCNAME[1]}")
 			echo -e "$docs" | sed -E 's/^\s*//g' | # remove leading whitespace
-			sed -E 's/(@\w+\s?)/\U\1/g' | # lines starting with "@" split and capitalize
-			sed -e 's/&nbsp;//g' | # remove lines that are blank spacers
-			sed -E '/^[^@]/s/^/\t/' | # add tabs to lines without "@"
-			sed -e 's/^@//' # remove leading "@"
+				sed -E 's/(@\w+\s?)/\U\1/g' |         # lines starting with "@" split and capitalize
+				sed -e 's/&nbsp;//g' |                # remove lines that are blank spacers
+				sed -E '/^[^@]/s/^/\t/' |             # add tabs to lines without "@"
+				sed -e 's/^@//'                       # remove leading "@"
 			exit 0
 		fi
+	done
+}
+
+bb.docs.markdown_links() {
+	for f in $(ls -1 commands); do
+		echo "$f" | sed -E 's/\.bash//g' | # strip the .bash suffix
+			sed -E 's/^(.*)/ - [\1](docs\/\1\.md)/' # convert to markdown link
 	done
 }
