@@ -9,6 +9,7 @@
 #
 # @exitcode 0 if successful
 bb.git.notes.fetch() {
+	_bb.docs.handle_usage
 	git fetch --force origin refs/notes/*:refs/notes/*
 }
 
@@ -21,6 +22,7 @@ bb.git.notes.fetch() {
 #
 # @exitcode 0 if successful
 bb.git.notes.log() {
+	_bb.docs.handle_usage
 	git fetch --force origin refs/notes/*:refs/notes/*
 	git log
 }
@@ -46,6 +48,7 @@ bb.git.notes.log() {
 #
 # @exitcode 0 if successful
 bb.git.notes.kv.get() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local ref="$2"
 	local default_value="$3"
@@ -122,12 +125,10 @@ bb.git.notes.kv.get() {
 #
 # @exitcode 0 if successful
 bb.git.notes.kv.remote.get() {
-	# key portion of the key-value pair
-	local key=$1
-	# git reference object - commit hash, tag, etc
-	local ref=$2
-	# git repo url
-	local repo_url=$3
+	_bb.docs.handle_usage
+	local key="$1"
+	local ref="$2"
+	local repo_url="$3"
 
 	bb.preconditions.not_null key || return $?
 	bb.preconditions.not_null ref || return $?
@@ -184,6 +185,7 @@ bb.git.notes.kv.remote.get() {
 #
 # @exitcode 0 if successful
 bb.git.notes.kv.set() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local value="$2"
 	local branch=$3

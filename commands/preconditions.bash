@@ -7,6 +7,7 @@
 # 	CI::PRECONDITIONS::not_null SOME_VARIABLE "You must set 'SOME_VARIABLE'"
 #		=>  You must set 'SOME_VARIABLE'
 bb.preconditions.not_null() {
+	_bb.docs.handle_usage
 	local VAR_NAME="$1"
 	local ERROR_MSG="$2"
 	if [ -z "$ERROR_MSG" ]; then ERROR_MSG="Expected [$VAR_NAME] to have value, but was empty."; fi
@@ -21,6 +22,7 @@ bb.preconditions.not_null() {
 # - 1 if command arg is not provided
 # - 127 if command not found as a file type
 bb.preconditions.has_command() {
+	_bb.docs.handle_usage
 	local cmd="$1"
 	bb.preconditions.not_null cmd || return $?
 	[[ $(type -t "$1") == "file" ]] && return 0
@@ -28,6 +30,7 @@ bb.preconditions.has_command() {
 }
 
 bb.preconditions.require_command() {
+	_bb.docs.handle_usage
 	local cmd="$1"
 	bb.preconditions.has_command "$cmd"
 	local exit_code=$?
@@ -38,6 +41,7 @@ bb.preconditions.require_command() {
 }
 
 bb.preconditions.require_file() {
+	_bb.docs.handle_usage
 	local filepath="$1"
 	bb.preconditions.not_null filepath || return $?
 	if [ -f "$filepath" ]; then return; fi

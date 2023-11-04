@@ -1,6 +1,7 @@
 ## Index
 
 * [bb.docs.generate_for_bash](#bbdocsgenerateforbash)
+* [_bb.docs.for_function](#bbdocsforfunction)
 
 ### bb.docs.generate_for_bash
 
@@ -16,4 +17,14 @@ Generates markdown documentation for bash scripts using shdoc
 
 * **0**: if successful
 * **1**: if args not provided or `shdoc` is not found
+
+### _bb.docs.for_function
+
+Prints out the docs of a function.
+
+#### Example
+
+```bash
+_bb.docs.usage "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
+```
 

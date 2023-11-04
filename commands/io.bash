@@ -12,6 +12,7 @@
 # @exitcode 0 if successful
 # @exitcode 1 if filename_or_var not provided
 bb.io.file_or_var() {
+	_bb.docs.handle_usage
 	local filename_or_var="$1"
 	bb.preconditions.not_null filename_or_var || return $?
 	if [ -f "$filename_or_var" ]; then
@@ -34,6 +35,7 @@ bb.io.file_or_var() {
 # @exitcode 0 if successful
 # @exitcode 1 if filename not provided
 bb.io.without_extensions() {
+	_bb.docs.handle_usage
 	local filename="$1"
 	bb.preconditions.not_null filename || return $?
 	echo "${filename%%.*}"
@@ -52,6 +54,7 @@ bb.io.without_extensions() {
 # @exitcode 0 if successful
 # @exitcode 1 if filename not provided
 bb.io.without_last_extension() {
+	_bb.docs.handle_usage
 	local filename="$1"
 	bb.preconditions.not_null filename || return $?
 	echo "${filename%.*}"
@@ -70,6 +73,7 @@ bb.io.without_last_extension() {
 # @exitcode 0 if successful
 # @exitcode 1 if filename not provided
 bb.io.extensions() {
+	_bb.docs.handle_usage
 	local filename="$1"
 	bb.preconditions.not_null filename || return $?
 	echo "${filename#*.}"
@@ -88,6 +92,7 @@ bb.io.extensions() {
 # @exitcode 0 if successful
 # @exitcode 1 if filename not provided
 bb.io.last_extension() {
+	_bb.docs.handle_usage
 	local filename="$1"
 	bb.preconditions.not_null filename || return $?
 	echo "${filename##*.}"
@@ -108,6 +113,7 @@ bb.io.last_extension() {
 # @exitcode 0 if successful
 # @exitcode 1 if filename not provided
 bb.io.full_dir_of() {
+	_bb.docs.handle_usage
 	local filepath="$1"
 	bb.preconditions.not_null filepath || return $?
 	local directory

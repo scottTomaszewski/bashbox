@@ -1,37 +1,44 @@
 #!/bin/bash
 
 bb.log.info() {
+	_bb.docs.handle_usage
 	message="$@"
 	echo -e "[INFO] $message" >&2
 }
 
 bb.log.warn() {
+	_bb.docs.handle_usage
 	bb.log.warning "$@"
 }
 
 bb.log.warning() {
+	_bb.docs.handle_usage
 	message="$@"
 	bb.log.color yellow "[WARNING] $message"
 }
 
 bb.log.error() {
+	_bb.docs.handle_usage
 	message="$@"
 	bb.log.color red "[ERROR] $message"
 }
 
 bb.log.title() {
+	_bb.docs.handle_usage
 	bb.preconditions.require_command figlet
 	figlet >&2 "$@"
 }
 
 bb.log.header() {
+	_bb.docs.handle_usage
 	bb.preconditions.require_command figlet
 	figlet -f small "$@" >&2
 }
 
 # Uses echo to print message in desired color. Colors are specified in bb.log.color.code
 bb.log.color() {
-	local COLOR_STRING=$1
+	_bb.docs.handle_usage
+	local COLOR_STRING="$1"
 	bb.preconditions.not_null COLOR_STRING || return $?
 	local MESSAGE="${@:2}"
 	local COLOR_CODE=$(CI::COLOR::code "$COLOR_STRING")
@@ -40,6 +47,7 @@ bb.log.color() {
 }
 
 bb.log.color.code() {
+	_bb.docs.handle_usage
 	local color_string="$1"
 	bb.preconditions.not_null color_string || return $?
 

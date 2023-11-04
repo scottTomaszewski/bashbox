@@ -1,6 +1,7 @@
 #!/bin/bash
 
 bb.json.get() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local input="$2"
 	bb.preconditions.not_null key || return $?
@@ -13,6 +14,7 @@ bb.json.get() {
 }
 
 bb.json.get_or_default() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local input="$2"
 	local default="$3"
@@ -38,6 +40,7 @@ bb.json.get_or_default() {
 }
 
 bb.json.set() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local value="$2"
 	local input="$3"
@@ -52,6 +55,7 @@ bb.json.set() {
 }
 
 bb.json.inplace.set() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local value="$2"
 	local input="$3"
@@ -68,6 +72,7 @@ bb.json.inplace.set() {
 }
 
 bb.json.set_number() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local value="$2"
 	local input="$3"
@@ -82,6 +87,7 @@ bb.json.set_number() {
 }
 
 bb.json.inplace.set_number() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local value="$2"
 	local input="$3"
@@ -98,6 +104,7 @@ bb.json.inplace.set_number() {
 }
 
 bb.json.delete() {
+	_bb.docs.handle_usage
 	local key="$1"
 	local input="$2"
 	bb.preconditions.not_null key || return $?
@@ -110,8 +117,9 @@ bb.json.delete() {
 }
 
 bb.json.inplace.delete() {
-	local key=$1
-	local input=$2
+	_bb.docs.handle_usage
+	local key="$1"
+	local input="$2"
 	bb.preconditions.require_file "$input" || return $?
 
 	output=$(bb.json.delete "$key" "$input")
@@ -127,6 +135,7 @@ bb.json.inplace.delete() {
 # USAGE
 #   bb.json.merge "BUILD_INFO.json" "new.json"
 bb.json.merge() {
+	_bb.docs.handle_usage
 	local base_input="$1"
 	local overriding_input="$2"
 	bb.preconditions.not_null base_input || return $?
@@ -135,6 +144,7 @@ bb.json.merge() {
 }
 
 bb.json.inplace.merge() {
+	_bb.docs.handle_usage
 	local base_input="$1"
 	local overriding_input="$2"
 	bb.preconditions.not_null base_input || return $?
@@ -155,6 +165,7 @@ bb.json.inplace.merge() {
 # TL;DR: `.foo.bar` becomes `."foo"."bar"`
 # @internal
 _bb.json.as_jpath() {
+	_bb.docs.handle_usage
 	local input="$1"
 	bb.preconditions.not_null input || return $?
 	echo "$input\"" | sed 's/^\./\."/' | sed 's/\./\"\.\"/2g'

@@ -12,6 +12,7 @@
 #
 # @exitcode 0 if successful
 bb.git.get_ref() {
+	_bb.docs.handle_usage
 	bb.preconditions.require_command git || return $?
 	git describe --tags --exact-match 2> /dev/null ||
 		git symbolic-ref -q --short HEAD ||
@@ -28,6 +29,7 @@ bb.git.get_ref() {
 #
 # @exitcode 0 if successful
 bb.git.last_tag() {
+	_bb.docs.handle_usage
 	git describe --tags --abbrev=0
 }
 
@@ -48,6 +50,7 @@ bb.git.last_tag() {
 #
 # @exitcode 0 if successful
 bb.git.remote.expand_sha() {
+	_bb.docs.handle_usage
 	local short_sha="$1"
 	local repo_url="$2"
 	bb.preconditions.not_null short_sha || return $?
@@ -126,6 +129,7 @@ bb.git.remote.expand_sha() {
 #
 # @exitcode 0 if successful
 bb.git.clone.shallow() {
+	_bb.docs.handle_usage
 	local ref="$1"
 	local repo_url="$2"
 	local repo_dir="$3"
@@ -200,6 +204,7 @@ bb.git.clone.shallow() {
 
 # @internal
 _bb.git.remote.expand_sha_with_ls_remote() {
+	_bb.docs.handle_usage
 	local short_sha="$1"
 	local repo_url="$2"
 	bb.preconditions.not_null short_sha || return $?
