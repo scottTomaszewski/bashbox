@@ -54,6 +54,7 @@ _bb.docs.for_function() {
 	echo "$comments"
 }
 
+# @internal
 _bb.docs.handle_usage() {
 	for arg in ${BASH_ARGV[@]}; do
 		if [[ $arg == "-h" ]] || [[ $arg == "--help" ]]; then
@@ -61,7 +62,7 @@ _bb.docs.handle_usage() {
 			docs=$(_bb.docs.for_function "${BASH_SOURCE[1]}" "${FUNCNAME[1]}")
 			echo -e "$docs" | sed -E 's/^\s*//g' | # remove leading whitespace
 				sed -E 's/(@\w+\s?)/\U\1/g' |         # lines starting with "@" split and capitalize
-				sed -e 's/#//g' |                # remove lines that are blank spacers
+				sed -e 's/#//g' |                     # remove lines that are blank spacers
 				sed -E '/^[^@]/s/^/\t/' |             # add tabs to lines without "@"
 				sed -e 's/^@//'                       # remove leading "@"
 			exit 0
@@ -69,14 +70,15 @@ _bb.docs.handle_usage() {
 	done
 }
 
+# @internal
 bb.docs.markdown_links() {
 	for f in $(ls -1 commands); do
 		# Print link to file docs
-		echo "$f" | sed -E 's/\.bash//g' | # strip the .bash suffix
+		echo "$f" | sed -E 's/\.bash//g' |       # strip the .bash suffix
 			sed -E 's/^(.*)/ - [\1](docs\/\1\.md)/' # convert to markdown link
 		# print each function link
 		grep -oP '^[^_][a-zA-Z0-9\._]*\(\)' "commands/$f" | # find all the functions in the script file that arent internal
-			sed -E 's/\(\)//g' | # remove the trailing "()"
-			sed -E 's/bb\./   - /g' # remove the "bb." prefix, add the indented list
+			sed -E 's/\(\)//g' |                               # remove the trailing "()"
+			sed -E 's/bb\./   - /g'                            # remove the "bb." prefix, add the indented list
 	done
 }

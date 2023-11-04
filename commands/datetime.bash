@@ -10,6 +10,7 @@
 #
 # @exitcode 0 if successful
 bb.datetime.now.iso() {
+	_bb.docs.handle_usage
 	date +"%Y-%m-%dT%H:%M:%S%:z"
 }
 
@@ -23,6 +24,7 @@ bb.datetime.now.iso() {
 #
 # @exitcode 0 if successful
 bb.datetime.now.hr() {
+	_bb.docs.handle_usage
 	date
 }
 
@@ -36,6 +38,7 @@ bb.datetime.now.hr() {
 #
 # @exitcode 0 if successful
 bb.datetime.now.unix() {
+	_bb.docs.handle_usage
 	bb.datetime.now.unix_seconds
 }
 
@@ -49,6 +52,7 @@ bb.datetime.now.unix() {
 #
 # @exitcode 0 if successful
 bb.datetime.now.unix_seconds() {
+	_bb.docs.handle_usage
 	date +%s
 }
 
@@ -62,6 +66,7 @@ bb.datetime.now.unix_seconds() {
 #
 # @exitcode 0 if successful
 bb.datetime.now.unix_milli() {
+	_bb.docs.handle_usage
 	date +%s%3N
 }
 
@@ -75,5 +80,6 @@ bb.datetime.now.unix_milli() {
 #
 # @exitcode 0 if successful
 bb.datetime.now.unix_nano() {
+	_bb.docs.handle_usage
 	date +%s%N
 }
