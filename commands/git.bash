@@ -110,16 +110,16 @@ bb.git.remote.expand_sha() {
 # @example
 # # shallow clones repo at short SHA
 # bb git.clone.shallow 25291a8fe https://github.com/scottTomaszewski/bashbox/
-# &nbsp;
+# #
 # # shallow clones repo at full SHA
 # bb git.clone.shallow 25291a8fe1aa01cf105be0b9516b3de2a7ebe118 https://github.com/scottTomaszewski/bashbox/
-# &nbsp;
+# #
 # # shallow clones repo at tag
 # bb git.clone.shallow v0.0.1 https://github.com/scottTomaszewski/bashbox/
-# &nbsp;
+# #
 # # shallow clones repo at branch
 # bb git.clone.shallow main https://github.com/scottTomaszewski/bashbox/
-# &nbsp;
+# #
 # # shallow clones repo at branch into directory `something`
 # bb git.clone.shallow main https://github.com/scottTomaszewski/bashbox/ "something"
 #

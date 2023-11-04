@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO - this file needs formal docs
+
 # Checks if the `VAR_NAME` is null (as defined by bash conditional for `-z` and `-n`) and returns if not null.
 # If `VAR_NAME` is null: print `ERROR_MSG` if provided, otherwise print a default error message.
 #

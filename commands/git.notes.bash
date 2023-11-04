@@ -37,7 +37,7 @@ bb.git.notes.log() {
 # @example
 # # this will get the value of key `metadata` in the git notes of commit ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55
 # bb git.notes.kv.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55
-# &nbsp;
+# #
 # # this will get the value of key `metadata` in the git notes of HEAD and defaults to `{"foo":"bar"}` if not found
 # bb git.notes.kv.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55 "{\"foo\":\"bar\"}"
 #
@@ -116,7 +116,7 @@ bb.git.notes.kv.get() {
 # bb git.notes.kv.remote.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55 https://github.com/scottTomaszewski/bashbox/
 #
 # TODO - add default value support
-# &nbsp;
+# #
 # # this will get the value of key `metadata` in the git notes of HEAD and defaults to `{"foo":"bar"}` if not found
 # bb git.notes.kv.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55 "{\"foo\":\"bar\"}"
 #
@@ -177,7 +177,7 @@ bb.git.notes.kv.remote.get() {
 # @example
 # # this will set the value of key `metadata` to `{"foo": "bar"}` in the git notes of `HEAD`
 # bb git.notes.kv.set metadata '{"foo": "bar"}'
-# &nbsp;
+# #
 #
 # @arg $1 string `key` Key portion of a key-value pair in git-notes entry
 # @arg $2 string `value` Value to assign to `key`

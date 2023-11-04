@@ -113,6 +113,7 @@ bb io.last_extension "filename.tar.gz"
 ---
 Prints the full path to a file, handling a few special cases.
 Can be especially useful to get a script's directory with `bb io.full_dir_of "${BASH_filepath[0]}"` inside the script
+
 Source: https://stackoverflow.com/a/246128
 
 #### Example

@@ -49,7 +49,7 @@ git repo is a shallow clone, this function will `fetch --unshallow` to attempt t
 ```bash
 # this will get the value of key `metadata` in the git notes of commit ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55
 bb git.notes.kv.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55
-&nbsp;
+#
 # this will get the value of key `metadata` in the git notes of HEAD and defaults to `{"foo":"bar"}` if not found
 bb git.notes.kv.get metadata ec95e1f0d6e06ba7e51e8c5573b14394c8a1fb55 "{\"foo\":\"bar\"}"
 ```
@@ -103,7 +103,7 @@ regex to allow for commit messages that start with `Notes \w+ by` or equivalent.
 ```bash
 # this will set the value of key `metadata` to `{"foo": "bar"}` in the git notes of `HEAD`
 bb git.notes.kv.set metadata '{"foo": "bar"}'
-&nbsp;
+#
 ```
 
 #### Arguments
