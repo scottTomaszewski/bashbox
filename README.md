@@ -2,6 +2,7 @@
 
  ## Command Docs
 
+ - [datetime](docs/datetime.md)
  - [docs](docs/docs.md)
  - [git](docs/git.md)
  - [git.notes](docs/git.notes.md)
