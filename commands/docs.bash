@@ -26,7 +26,9 @@ bb.docs.generate_for_bash() {
 	done
 }
 
-# @description Prints out the docs of a function.
+# @description
+# ---
+# Prints out the docs of a function.
 #
 # @example
 # _bb.docs.usage "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
@@ -57,8 +59,8 @@ _bb.docs.handle_usage() {
 		if [[ $arg == "-h" ]] || [[ $arg == "--help" ]]; then
 			local docs
 			docs=$(_bb.docs.for_function "${BASH_SOURCE[1]}" "${FUNCNAME[1]}")
-			echo -e "$docs" | awk '{$1=$1};1' | # remove extra whitespace (https://unix.stackexchange.com/a/205854)
-			sed -E 's/(@\w+\s?)/\U\1\n/g' | # lines starting with "@" split and capitalize
+			echo -e "$docs" | sed -E 's/^\s*//g' | # remove leading whitespace
+			sed -E 's/(@\w+\s?)/\U\1/g' | # lines starting with "@" split and capitalize
 			sed -e 's/&nbsp;//g' | # remove lines that are blank spacers
 			sed -E '/^[^@]/s/^/\t/' | # add tabs to lines without "@"
 			sed -e 's/^@//' # remove leading "@"

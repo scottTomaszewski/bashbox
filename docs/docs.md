@@ -20,6 +20,7 @@ Generates markdown documentation for bash scripts using shdoc
 
 ### _bb.docs.for_function
 
+---
 Prints out the docs of a function.
 
 #### Example

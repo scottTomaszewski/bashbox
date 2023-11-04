@@ -1,55 +1,156 @@
 #!/bin/bash
 
+# @description
+# ---
+# Prints the `message` to stderr with `[INFO] ` prefix
+#
+# @example
+# # Prints `[INFO] Hello there` to stderr
+# bb log.info "Hello there"
+#
+# @arg $1 string `message` Message to print
+#
+# @exitcode 0 if successful
 bb.log.info() {
 	_bb.docs.handle_usage
 	message="$@"
 	echo -e "[INFO] $message" >&2
 }
 
+# @description
+# ---
+# Prints the `message` to stderr with `[WARNING] ` prefix in yellow text
+#
+# @example
+# # Prints `[WARNING] Hello there` to stderr
+# bb log.warn "Hello there"
+#
+# @arg $1 string `message` Message to print
+#
+# @exitcode 0 if successful
 bb.log.warn() {
 	_bb.docs.handle_usage
 	bb.log.warning "$@"
 }
 
+# @description
+# ---
+# Prints the `message` to stderr with `[WARNING] ` prefix in yellow text
+#
+# @example
+# # Prints `[WARNING] Hello there` to stderr
+# bb log.warning "Hello there"
+#
+# @arg $1 string `message` Message to print
+#
+# @exitcode 0 if successful
 bb.log.warning() {
 	_bb.docs.handle_usage
 	message="$@"
 	bb.log.color yellow "[WARNING] $message"
 }
 
+# @description
+# ---
+# Prints the `message` to stderr with `[ERROR] ` prefix in red text
+#
+# @example
+# # Prints `[ERROR] Hello there` to stderr
+# bb log.error "Hello there"
+#
+# @arg $1 string `message` Message to print
+#
+# @exitcode 0 if successful
 bb.log.error() {
 	_bb.docs.handle_usage
 	message="$@"
 	bb.log.color red "[ERROR] $message"
 }
 
+# @description
+# ---
+# Prints the `message` to stderr in big title letters
+#
+# @example
+# # Prints the following to stderr:
+# #  _   _      _ _         _   _
+# # | | | | ___| | | ___   | |_| |__   ___ _ __ ___
+# # | |_| |/ _ \ | |/ _ \  | __| '_ \ / _ \ '__/ _ \
+# # |  _  |  __/ | | (_) | | |_| | | |  __/ | |  __/
+# # |_| |_|\___|_|_|\___/   \__|_| |_|\___|_|  \___|
+# #
+# bb log.title "Hello there"
+#
+# @arg $1 string `message` Message to print
+#
+# @exitcode 0 if successful
 bb.log.title() {
 	_bb.docs.handle_usage
+	message="$@"
 	bb.preconditions.require_command figlet
-	figlet >&2 "$@"
+	figlet >&2 "$message"
 }
 
+# @description
+# ---
+# Prints the `message` to stderr in header letters
+#
+# @example
+# # Prints the following to stderr:
+# #  _  _     _ _       _   _
+# # | || |___| | |___  | |_| |_  ___ _ _ ___
+# # | __ / -_) | / _ \ |  _| ' \/ -_) '_/ -_)
+# # |_||_\___|_|_\___/  \__|_||_\___|_| \___|
+# #
+# bb log.header "Hello there"
+#
+# @arg $1 string `message` Message to print
+#
+# @exitcode 0 if successful
 bb.log.header() {
 	_bb.docs.handle_usage
+	message="$@"
 	bb.preconditions.require_command figlet
-	figlet -f small "$@" >&2
+	figlet -f small "$message" >&2
 }
 
-# Uses echo to print message in desired color. Colors are specified in bb.log.color.code
+# @description
+# ---
+# Prints the `message` in the desired color. Use `bb log.color.options` to see available colors
+#
+# @example
+# # Prints `Hello there` in blue
+# bb log.color blue "Hello there"
+#
+# @arg $1 string `color` Color to print in
+# @arg $2 string `message` Message to print
+#
+# @exitcode 0 if successful
 bb.log.color() {
 	_bb.docs.handle_usage
-	local COLOR_STRING="$1"
-	bb.preconditions.not_null COLOR_STRING || return $?
-	local MESSAGE="${@:2}"
-	local COLOR_CODE=$(CI::COLOR::code "$COLOR_STRING")
-	local TXTRESET="$(tput sgr 0 2> /dev/null || echo '\e[0m')"
-	echo -e "${COLOR_CODE}${MESSAGE}${TXTRESET}" >&2
+	local color="$1"
+	bb.preconditions.not_null color || return $?
+	local message="${@:2}"
+	local color_code=$(bb.log.color.code "$color")
+	local txtreset="$(tput sgr 0 2> /dev/null || echo '\e[0m')"
+	echo -e "${color_code}${message}${txtreset}" >&2
 }
 
+# @description
+# ---
+# Returns the formatted ANSI escape code for the specified `color`
+#
+# @example
+# # Prints `'\e[0;31m'`
+# bb log.color.code red
+#
+# @arg $1 string `color` Color to print ANSI escape code for
+#
+# @exitcode 0 if successful
 bb.log.color.code() {
 	_bb.docs.handle_usage
-	local color_string="$1"
-	bb.preconditions.not_null color_string || return $?
+	local color="$1"
+	bb.preconditions.not_null color || return $?
 
 	# Text colors
 	local TXTBLK="$(tput setaf 0 2> /dev/null || echo '\e[0;30m')"
@@ -61,7 +162,7 @@ bb.log.color.code() {
 	local TXTCYN="$(tput setaf 6 2> /dev/null || echo '\e[0;36m')"
 	local TXTWHT="$(tput setaf 7 2> /dev/null || echo '\e[0;37m')"
 
-	case "$color_string" in
+	case "$color" in
 	black) local COLOR_START="$TXTBLK" ;;
 	red) local COLOR_START="$TXTRED" ;;
 	green) local COLOR_START="$TXTGRN" ;;
@@ -73,4 +174,33 @@ bb.log.color.code() {
 	*) local COLOR_START="" ;;
 	esac
 	echo "$COLOR_START"
+}
+
+# @description
+# ---
+# Prints a list of colors supported by `bb log.color.code` and transitively by `bb log.color`
+#
+# @example
+# # Prints:
+# # black
+# # red
+# # green
+# # yellow
+# # blue
+# # magenta
+# # cyan
+# # white
+# bb log.color.options
+#
+# @exitcode 0 if successful
+bb.log.color.options() {
+	_bb.docs.handle_usage
+	echo "black"
+	echo "red"
+	echo "green"
+	echo "yellow"
+	echo "blue"
+	echo "magenta"
+	echo "cyan"
+	echo "white"
 }
