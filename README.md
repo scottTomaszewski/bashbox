@@ -3,10 +3,56 @@
  ## Command Docs
 
  - [datetime](docs/datetime.md)
+   - datetime.now.iso
+   - datetime.now.hr
+   - datetime.now.unix
+   - datetime.now.unix_seconds
+   - datetime.now.unix_milli
+   - datetime.now.unix_nano
  - [docs](docs/docs.md)
+   - docs.generate_for_bash
+   - docs.markdown_links
  - [git](docs/git.md)
+   - git.get_ref
+   - git.last_tag
+   - git.remote.expand_sha
+   - git.clone.shallow
  - [git.notes](docs/git.notes.md)
+   - git.notes.fetch
+   - git.notes.log
+   - git.notes.kv.get
+   - git.notes.kv.remote.get
+   - git.notes.kv.set
  - [io](docs/io.md)
+   - io.file_or_var
+   - io.without_extensions
+   - io.without_last_extension
+   - io.extensions
+   - io.last_extension
+   - io.full_dir_of
  - [json](docs/json.md)
+   - json.get
+   - json.get_or_default
+   - json.set
+   - json.inplace.set
+   - json.set_number
+   - json.inplace.set_number
+   - json.delete
+   - json.inplace.delete
+   - json.merge
+   - json.inplace.merge
  - [log](docs/log.md)
+   - log.info
+   - log.warn
+   - log.warning
+   - log.error
+   - log.title
+   - log.header
+   - log.color
+   - log.color.code
+   - log.color.options
  - [preconditions](docs/preconditions.md)
+   - preconditions.not_null
+   - preconditions.has_command
+   - preconditions.require_command
+   - preconditions.require_file

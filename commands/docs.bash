@@ -71,7 +71,12 @@ _bb.docs.handle_usage() {
 
 bb.docs.markdown_links() {
 	for f in $(ls -1 commands); do
+		# Print link to file docs
 		echo "$f" | sed -E 's/\.bash//g' | # strip the .bash suffix
 			sed -E 's/^(.*)/ - [\1](docs\/\1\.md)/' # convert to markdown link
+		# print each function link
+		grep -oP '^[^_][a-zA-Z0-9\._]*\(\)' "commands/$f" | # find all the functions in the script file that arent internal
+			sed -E 's/\(\)//g' | # remove the trailing "()"
+			sed -E 's/bb\./   - /g' # remove the "bb." prefix, add the indented list
 	done
 }
