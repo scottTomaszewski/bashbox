@@ -13,7 +13,8 @@
 # @exitcode 1 if filename_or_var not provided
 bb.io.file_or_var() {
 	_bb.docs.handle_usage
-	local filename_or_var="$1"
+	local filename_or_var
+	filename_or_var=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null filename_or_var || return $?
 	if [ -f "$filename_or_var" ]; then
 		cat "$filename_or_var"
@@ -36,7 +37,8 @@ bb.io.file_or_var() {
 # @exitcode 1 if filename not provided
 bb.io.without_extensions() {
 	_bb.docs.handle_usage
-	local filename="$1"
+	local filename
+	filename=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null filename || return $?
 	echo "${filename%%.*}"
 }
@@ -55,7 +57,8 @@ bb.io.without_extensions() {
 # @exitcode 1 if filename not provided
 bb.io.without_last_extension() {
 	_bb.docs.handle_usage
-	local filename="$1"
+	local filename
+	filename=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null filename || return $?
 	echo "${filename%.*}"
 }
@@ -74,7 +77,8 @@ bb.io.without_last_extension() {
 # @exitcode 1 if filename not provided
 bb.io.extensions() {
 	_bb.docs.handle_usage
-	local filename="$1"
+	local filename
+	filename=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null filename || return $?
 	echo "${filename#*.}"
 }
@@ -93,7 +97,8 @@ bb.io.extensions() {
 # @exitcode 1 if filename not provided
 bb.io.last_extension() {
 	_bb.docs.handle_usage
-	local filename="$1"
+	local filename
+	filename=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null filename || return $?
 	echo "${filename##*.}"
 }
@@ -115,7 +120,8 @@ bb.io.last_extension() {
 # @exitcode 1 if filename not provided
 bb.io.full_dir_of() {
 	_bb.docs.handle_usage
-	local filepath="$1"
+	local filename
+	filename=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null filepath || return $?
 	local directory
 	while [ -L "$filepath" ]; do # resolve $filepath until the file is no longer a symlink
@@ -125,4 +131,19 @@ bb.io.full_dir_of() {
 	done
 	directory=$(cd -P "$(dirname "$filepath")" > /dev/null 2>&1 && pwd)
 	echo "$directory"
+}
+
+# @internal
+#
+# @description returns the piped input if available, otherwise the arg
+# TODO - consider making this public...
+_bb.io.param_or_piped() {
+	local input
+	# Check if an argument was provided, and if not, read from stdin (pipe)
+	if [ $# -eq 0 ]; then
+		input=$(cat)
+	else
+		input="$1"
+	fi
+	echo "$input"
 }

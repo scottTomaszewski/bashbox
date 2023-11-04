@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO - add docs
+
 bb.json.get() {
 	_bb.docs.handle_usage
 	local key="$1"

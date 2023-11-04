@@ -13,7 +13,8 @@
 # @exitcode 0 if successful
 bb.log.info() {
 	_bb.docs.handle_usage
-	message="$@"
+	local message
+	message=$(_bb.io.param_or_piped "$@")
 	echo -e "[INFO] $message" >&2
 }
 
@@ -46,7 +47,8 @@ bb.log.warn() {
 # @exitcode 0 if successful
 bb.log.warning() {
 	_bb.docs.handle_usage
-	message="$@"
+	local message
+	message=$(_bb.io.param_or_piped "$@")
 	bb.log.color yellow "[WARNING] $message"
 }
 
@@ -63,7 +65,8 @@ bb.log.warning() {
 # @exitcode 0 if successful
 bb.log.error() {
 	_bb.docs.handle_usage
-	message="$@"
+	local message
+	message=$(_bb.io.param_or_piped "$@")
 	bb.log.color red "[ERROR] $message"
 }
 
@@ -86,7 +89,8 @@ bb.log.error() {
 # @exitcode 0 if successful
 bb.log.title() {
 	_bb.docs.handle_usage
-	message="$@"
+	local message
+	message=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.require_command figlet
 	figlet >&2 "$message"
 }
@@ -109,7 +113,8 @@ bb.log.title() {
 # @exitcode 0 if successful
 bb.log.header() {
 	_bb.docs.handle_usage
-	message="$@"
+	local message
+	message=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.require_command figlet
 	figlet -f small "$message" >&2
 }
@@ -149,7 +154,8 @@ bb.log.color() {
 # @exitcode 0 if successful
 bb.log.color.code() {
 	_bb.docs.handle_usage
-	local color="$1"
+	local color
+	color=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null color || return $?
 
 	# Text colors
