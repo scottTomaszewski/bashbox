@@ -5,8 +5,11 @@ _bb_completion() {
 	COMPREPLY=()
 	current_word="${COMP_WORDS[COMP_CWORD]}"
 
+	bashbox_home=$(bb home_dir)
+
 	# Dynamically get a list of subcommands from functions in the "commands" directory
-	subcommands=$(for file in /home/scott.tomaszewski/code/personal/bashbox/commands/*.bash; do
+	# TODO - cant hard-code this
+	subcommands=$(for file in "${bashbox_home}"/commands/*.bash; do
 		grep -E '^[a-zA-Z_][a-zA-Z0-9\._]*[[:space:]]*\(\)' "$file" |   # find the function lines
 			sed -E 's/^([a-zA-Z_][a-zA-Z0-9\._]*)[[:space:]]*\(\).*/\1/' | # grab name and remove "() {"
 			grep -vE '^_' |                                                # remove internal functions
