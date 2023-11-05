@@ -62,7 +62,6 @@ _bb.docs.handle_usage() {
 			docs=$(_bb.docs.for_function "${BASH_SOURCE[1]}" "${FUNCNAME[1]}")
 			echo -e "$docs" | sed -E 's/^\s*//g' | # remove leading whitespace
 				sed -E 's/(@\w+\s?)/\U\1/g' |         # lines starting with "@" split and capitalize
-				sed -e 's/#//g' |                     # remove lines that are blank spacers
 				sed -E '/^[^@]/s/^/\t/' |             # add tabs to lines without "@"
 				sed -e 's/^@//'                       # remove leading "@"
 			exit 0
