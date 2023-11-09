@@ -121,6 +121,25 @@ bb.log.header() {
 
 # @description
 # ---
+# Prints the `message` to stderr in mocking letters
+#
+# @example
+# # Prints the following to stderr:
+# # hElLo tHeRe
+# bb log.header "hello there"
+#
+# @arg $1 string `message` Message to print
+#
+# @exitcode 0 if successful
+bb.log.mocking() {
+	_bb.docs.handle_usage
+	local message
+	message=$(_bb.io.param_or_piped "$@")
+	echo -e "$message" | sed 's/\(.\)\(.\)\?/\1\u\2/g'
+}
+
+# @description
+# ---
 # Prints the `message` in the desired color. Use `bb log.color.options` to see available colors
 #
 # @example

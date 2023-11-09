@@ -6,6 +6,7 @@
 * [bb.log.error](#bblogerror)
 * [bb.log.title](#bblogtitle)
 * [bb.log.header](#bblogheader)
+* [bb.log.mocking](#bblogmocking)
 * [bb.log.color](#bblogcolor)
 * [bb.log.color.code](#bblogcolorcode)
 * [bb.log.color.options](#bblogcoloroptions)
@@ -131,6 +132,27 @@ Prints the `message` to stderr in header letters
 # |_||_\___|_|_\___/  \__|_||_\___|_| \___|
 #
 bb log.header "Hello there"
+```
+
+#### Arguments
+
+* **$1** (string): `message` Message to print
+
+#### Exit codes
+
+* **0**: if successful
+
+### bb.log.mocking
+
+---
+Prints the `message` to stderr in mocking letters
+
+#### Example
+
+```bash
+# Prints the following to stderr:
+# hElLo tHeRe
+bb log.header "hello there"
 ```
 
 #### Arguments

@@ -48,6 +48,7 @@
    - log.error
    - log.title
    - log.header
+   - log.mocking
    - log.color
    - log.color.code
    - log.color.options
