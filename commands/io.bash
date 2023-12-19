@@ -120,8 +120,8 @@ bb.io.last_extension() {
 # @exitcode 1 if filename not provided
 bb.io.full_dir_of() {
 	_bb.docs.handle_usage
-	local filename
-	filename=$(_bb.io.param_or_piped "$@")
+	local filepath
+	filepath=$(_bb.io.param_or_piped "$@")
 	bb.preconditions.not_null filepath || return $?
 	local directory
 	while [ -L "$filepath" ]; do # resolve $filepath until the file is no longer a symlink
