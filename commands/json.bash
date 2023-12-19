@@ -67,7 +67,7 @@ bb.json.inplace.set() {
 	output=$(bb.json.set "$key" "$value" "$input")
 	local exit_code=$?
 	if [ "$exit_code" != 0 ]; then
-		bb.log.error "Failed to set json value (error $exit_code): $output"
+		bb.log.error "Failed to set value in json (error $exit_code): $output"
 		return "$exit_code"
 	fi
 	echo -e "$output" > "$input"
@@ -99,7 +99,60 @@ bb.json.inplace.set_number() {
 	output=$(bb.json.set_number "$key" "$value" "$input")
 	local exit_code=$?
 	if [ "$exit_code" != 0 ]; then
-		bb.log.error "Failed to set json numeric value (error $exit_code): $output"
+		bb.log.error "Failed to set numeric value in json (error $exit_code): $output"
+		return "$exit_code"
+	fi
+	echo -e "$output" > "$input"
+}
+
+# @description
+# ---
+# Prints the `input` json document with field `key` set to a json value `value`.
+# This is helpful for when you want to embed one json document within another.
+#
+# @example
+# # Prints
+# # {
+# #  "a": "b",
+# #  "c": {
+# #    "d": "e"
+# #  }
+# # }
+# echo '{"a": "b"}' > doc.json
+# bb json.set_json ".c" '{"d": "e"}' doc.json
+#
+# @arg $1 string `key` jq path for the key to set
+# @arg $2 string `value` json string to set as the value for `key`
+# @arg $3 string `input` json file to set key-value within
+#
+# @exitcode 0 if successful
+bb.json.set_json() {
+	_bb.docs.handle_usage
+	local key="$1"
+	local value="$2"
+	local input="$3"
+	bb.preconditions.not_null key || return $?
+	bb.preconditions.not_null value || return $?
+	bb.preconditions.not_null input || return $?
+	bb.preconditions.require_command jq || return $?
+
+	local jpath
+	jpath=$(_bb.json.as_jpath "$key")
+	jq -r --arg value "$value" "$jpath = (\$value | fromjson)" <(bb.io.file_or_var "$input")
+}
+
+bb.json.inplace.set_json() {
+	_bb.docs.handle_usage
+	local key="$1"
+	local value="$2"
+	local input="$3"
+	bb.preconditions.require_file "$input" || return $?
+
+	local output
+	output=$(bb.json.set_json "$key" "$value" "$input")
+	local exit_code=$?
+	if [ "$exit_code" != 0 ]; then
+		bb.log.error "Failed to set json value in json (error $exit_code): $output"
 		return "$exit_code"
 	fi
 	echo -e "$output" > "$input"

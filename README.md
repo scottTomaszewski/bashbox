@@ -37,6 +37,8 @@
    - json.inplace.set
    - json.set_number
    - json.inplace.set_number
+   - json.set_json
+   - json.inplace.set_json
    - json.delete
    - json.inplace.delete
    - json.merge
