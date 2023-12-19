@@ -143,7 +143,7 @@ _bb.io.param_or_piped() {
 	if [ $# -eq 0 ]; then
 		input=$(cat)
 	else
-		input="$1"
+		input="$@"
 	fi
 	echo "$input"
 }
